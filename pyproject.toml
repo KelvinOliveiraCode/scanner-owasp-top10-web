@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "scanner-owasp-top10-web"
+version = "0.1.0"
+description = "Pentest CWE/OWASP scanner MVP: headers, cookies, SQLi simples, XSS refletido"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "requests>=2.31.0",
+    "beautifulsoup4>=4.12.0",
+]
+
+[project.scripts]
+scanner-owasp = "scanner_owasp.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+norecursedirs = ["src", ".venv", "build", "dist", "*.egg", "*.egg-info", "__pycache__"]
+addopts = "-q"
