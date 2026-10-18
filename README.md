@@ -1,93 +1,83 @@
 # scanner-owasp-top10-web
 
-Scanner de pentest CWE/OWASP (MVP) escrito em Python. Verifica cabeçalhos de
-segurança HTTP, flags de cookie, SQL Injection simples e XSS refletido, e
-emite relatório em JSON ou HTML. Destinado a ambientes de teste e educação em
-segurança; use apenas em alvos que você tem permissão para avaliar.
+![Python](https://img.shields.io/badge/Python-3.x-blue?logo=python)   ![status: concluido](https://img.shields.io/badge/status-concluido-green)   ![licenca: MIT](https://img.shields.io/badge/licenca-MIT-blue)
 
-OWASP Top 10 mapeados: A03 (Injeção), A05 (Configuração de Segurança), A02
-(Falhas Criptográficas) e A07 (Falhas de Identificação e Autenticação).
+## Resumo
 
-## Sobre o projeto / About
+Projeto em Python desenvolvido como estudo de engenharia de software. Projeto funcional, scanner-owasp-top10-web
 
-`scanner-owasp-top10-web` é um scanner leve e determinístico. Não explora
-vulnerabilidades: indica indícios (cabeçalho ausente, cookie sem flag, erro de
-banco de dados ou payload refletido) para o responsável decidir a verificação.
+## Problema / por que existe
 
-Verificações do MVP:
+O projeto aborda um recorte pratico e automatiza uma tarefa que, feita manualmente, e repetitiva e propensa a erro. O foco esta em transformar dados ou processos em saida confiavel, com codigo legivel e testavel.
 
-- Cabeçalhos de segurança: HSTS, CSP, X-Frame-Options, X-Content-Type-Options,
-  Referrer-Policy e Permissions-Policy. Cabeçalhos expostos (Server,
-  X-Powered-By) também são listados.
-- Cookies: Secure, HttpOnly e SameSite.
-- SQL Injection simples: payloads básicos em parâmetros de query com detecção
-  de assinaturas de erro de banco de dados.
-- XSS refletido: verifica se um script injetado volta bruto na resposta.
+## Arquitetura
 
-## Como usar / How to use
+O codigo esta organizado por responsabilidade:
 
-Instale o projeto em modo editável:
+- Entrada: leitura de arquivo, API, entrada do usuario ou captura de dados (dependendo do modulo).
+- Processamento: funcoes puras ou classes que aplicam regras de negocio, transformacao ou analise sobre os dados de entrada.
+- Saida: gravacao de arquivo, impressao em terminal, resposta HTTP ou geracao de relatorio.
 
-```
-pip install -e .
-```
+Quando aplicavel, a aplicacao separa a camada de acesso a dados da camada de logica de negocio, para que mudar a origem dos dados nao exija reescrever as regras.
 
-Execute contra um alvo:
+## Tecnologias
 
-```
-python -m scanner_owasp https://alvo.example.com/page?id=1
-```
+- Python 3.x
+- (nenhum informado no repositorio)
 
-Ou instale o script de console e use diretamente:
+- Sem CI configurado neste repositorio.
+
+O repositorio contem testes automatizados.
+
+## O que faz
+
+Projeto funcional, scanner-owasp-top10-web
+
+## Como rodar
+
+Requisitos: Python 3.x instalado.
 
 ```
-scanner-owasp https://alvo.example.com/page?id=1 --format html --outfile relatorio.html
+# instalar dependencias (se houver requirements.txt)
+pip install -r requirements.txt
+
+# executar
+python main.py
+
+# executar testes
+pytest
 ```
 
-Opções:
+## Estrutura do projeto
 
-- `target`: URL alvo, com ou sem parâmetros de query.
-- `--format`: `json` (padrão) ou `html`.
-- `--outfile`: caminho do arquivo de relatório (padrão: stdout).
-- `--timeout`: tempo limite da requisição em segundos (padrão: 10.0).
+- src/ (20 arquivo(s))
+- tests/ (16 arquivo(s))
+- .gitignore, BRIEF.md, LICENSE, pyproject.toml, README.en.md, README.md
 
-Exemplo de saída JSON:
 
-```json
-{
-  "target": "https://alvo.example.com/page?id=1",
-  "started_at": "2026-10-16T20:00:00+00:00",
-  "requests_made": 4,
-  "summary": {"critical": 0, "high": 1, "medium": 2, "low": 1},
-  "findings": [...]
-}
-```
+## Trade-offs e decisões
 
-## Executar os testes / Run the tests
+- Biblioteca padrao sempre que possivel, dependencias externas so quando o ganho justifica a manutencao.
+- Scripts executaveis direto, sem build step complexo, para facilitar a reproducao.
+- Logica separada de entrada/saida para manter as funcoes de processamento testaveis.
 
-A suíte usa `pytest` com requisições falsificadas (não há rede):
+## Limitações conhecidas
+
+- Escopo limitado ao recorte descrito; nao e uma plataforma completa.
+- Depende de Python 3.x no ambiente de execucao.
+
+
+## Testes
 
 ```
-python -m pytest -q
+pytest
 ```
 
-Resultado esperado: todos os testes passam, sem erros e sem avisos.
+## Licença
 
-## Relatório / Report
+Distribuído sob a licenca MIT. Consulte o arquivo `LICENSE` do repositorio.
 
-O relatório JSON inclui alvo, carimbo de data/hora, número de requisições,
-contagem por severidade e a lista de achados com verificação, título,
-descrição, URL, evidência, CWE e OWASP. O HTML exibe o mesmo conteúdo em uma
-tabela com resumo de severidade.
+## Autor
 
-## Licença / License
-
-MIT License. Veja o arquivo LICENSE (texto padrão MIT incluído no projeto).
-
-## Autor / Author
-
-Kelvin Oliveira
-
-Área: Cibersegurança
-
-Projeto: scanner-owasp-top10-web (PLANO_50_PROJETOS.md)
+Kelvin Oliveira, https://github.com/KelvinOliveiraCode
+Portfolio: https://kelvinoliveiracode.github.io/portfolio/
