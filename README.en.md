@@ -1,118 +1,113 @@
 # scanner-owasp-top10-web
 
-<div align="center">
-
 **English** · [Português (Brasil)](README.md)
 
-</div>
-
-[![Python 3](https://img.shields.io/badge/Python-3.x-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/) [![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikit-learn)](https://scikit-learn.org/) [![pandas](https://img.shields.io/badge/pandas-150458?style=flat-square&logo=pandas)](https://pandas.pydata.org/) [![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=flat-square&logo=pytest)](https://docs.pytest.org/) [![MIT License](https://img.shields.io/badge/License-MIT-f4c430?style=flat-square)](LICENSE)
-
-### Projeto funcional ,  scanner-owasp-top10-web
-
----
+[![Python 3](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)](#) [![requests](https://img.shields.io/badge/requests-2.31%2B-2C8EBB?style=flat-square&logo=python)](#) [![BeautifulSoup](https://img.shields.io/badge/BeautifulSoup-4-2C8EBB?style=flat-square)](#) [![pytest](https://img.shields.io/badge/pytest-70%20tests-0A9EDC?style=flat-square&logo=pytest)](#) [![MIT License](https://img.shields.io/badge/License-MIT-f4c430?style=flat-square)](LICENSE)
 
 ## What it is
 
-Projeto funcional ,  scanner-owasp-top10-web
+A **web security scanner** that checks HTTP targets against a set of checks inspired by the **OWASP Top 10**: security headers, cookies, SQL injection and XSS. It runs from the command line and produces a report (JSON by default). It is an educational auditing tool.
 
----
+## ⚠️ Ethical and legal use warning
 
-## Quick Start
+This is an **auditing** tool. Use it only on systems **you own** or with **explicit written authorization**. Scanning third-party systems without permission is illegal and unethical.
 
-```bash
-# Clone and enter
-git clone https://github.com/KelvinOliveiraCode/<repo>.git
-cd <repo>
+## Status
 
-# Install dependencies
-# No requirements.txt detected
+A working security lab, with 70 tests.
 
-# Run the project
-python main.py
+> **Warning (verified by the agent):** the repository contains **committed duplicated structure** (`src/src/…` and `tests/tests/…`). The **70 tests pass** with `PYTHONPATH=src pytest tests/`. See `HYGIENE.md`.
 
-# Run tests
-pytest
+## Features
+
+- **Security header check** (`headers.py`): detects missing baseline headers.
+- **Cookie check** (`cookies.py`): evaluates security attributes (HttpOnly, Secure, etc.).
+- **SQL injection test** (`sqli.py`) and **XSS test** (`xss.py`) on parameters.
+- **Scanning engine** (`core.py`, class `Scanner`): orchestrates the checks against a target URL.
+- **Report** (`report.py`): JSON output by default.
+- **CLI**: target (URL), report format, output file and timeout.
+
+## Architecture
+
+A `scanner_owasp` package with `core` (engine), check modules (`headers`, `cookies`, `sqli`, `xss`), `models` (findings), `report` (output) and `cli`. `Scanner.scan(target)` runs all checks and aggregates the findings.
+
+```mermaid
+flowchart LR
+    CLI[cli.py] --> SC[Scanner - core.py]
+    SC --> H[headers - check]
+    SC --> CK[cookies - check]
+    SC --> SQ[sqli - test]
+    SC --> XS[xss - test]
+    H --> M[models - findings]
+    SC --> R[report - JSON]
 ```
 
-## How it works
+## Stack
 
-Estrutura limpa e modular com separação de responsabilidades.
+- Python ≥ 3.10
+- requests ≥ 2.31, beautifulsoup4 ≥ 4.12
+- pytest (dev)
 
----
+## Repository layout
 
-## Capabilities
+```
+scanner-owasp-top10-web/
+├── pyproject.toml · BRIEF.md
+├── src/scanner_owasp/
+│   ├── core.py       # scan engine
+│   ├── headers.py · cookies.py · sqli.py · xss.py
+│   ├── models.py · report.py · cli.py
+│   └── __main__.py
+├── tests/            # 7 files, 70 tests
+├── LICENSE           # MIT
+└── (committed duplicates: src/src/…, tests/tests/…)  # see HYGIENE
+```
 
-| Capacidade | Descrição |
-|------------|-------------|
-| Carregamento de Dados | Auto-download do TensorFlow creditcard.csv (284k transações) com cache local |
-| EDA e Visualização | Distribuição de classes, histogramas de Amount, heatmaps de correlação (matplotlib/seaborn) |
-| Pré-processamento | RobustScaler em Amount/Time, split estratificado, remoção de duplicatas |
-| Balanceamento | SMOTE oversampling (fallback: class_weight="balanced") |
-| Modelagem | LogisticRegression, RandomForest, ExtraTrees com RandomizedSearchCV (StratifiedKFold) |
-| Métricas | Accuracy, Precision, Recall, F1, ROC AUC, Specificity, Confusion Matrix |
-| Seleção | Score ponderado: Recall 40% + F1 30% + Precision 20% + Accuracy 10% |
-| Persistência | Serialização joblib para modelo, scaler e resultados completos |
+## Prerequisites and installation
 
+Python ≥ 3.10.
 
----
+```bash
+pip install -e .
+```
 
+## How to run
 
+```bash
+python -m scanner_owasp https://example.com/page?id=1
+# or as a script
+scanner-owasp <target> [--formato json|...] [--saida file] [--timeout 10.0]
+```
 
----
+## Tests and quality
 
-## FAQ
+Real run (verified by the agent):
 
-<details>
-<summary><strong>What is this project?</strong></summary>
+```bash
+PYTHONPATH=src python -m pytest tests/
+# 70 passed
+```
 
-A Python study/project demonstrating core concepts.
+> `pytest tests/` without `PYTHONPATH` fails at collection because of the committed duplicated structure (see Status).
 
-</details>
+## Technical decisions and trade-offs
 
-<details>
-<summary><strong>How do I run it?</strong></summary>
+- **Deterministic HTTP checks** (via `requests`) instead of a browser: fast and light; in exchange, JavaScript is not executed.
+- **JSON report**: easy to integrate into pipelines.
+- **OWASP Top 10 web focus** (headers, cookies, SQLi, XSS): common initial-audit coverage.
 
-See [Quick Start](#quick-start) for copy-paste commands.
+## Known limitations and roadmap
 
-</details>
+- Does not execute JavaScript or test complex SPAs.
+- SQLi/XSS uses simple payloads; may produce false negatives behind a WAF.
+- The checks cover a subset of the OWASP Top 10; it does not replace a full scanner or manual analysis.
 
-<details>
-<summary><strong>Are there tests?</strong></summary>
+## Development process
 
-No automated tests in this repository.
+An individual project by Kelvin Oliveira, built with orchestrated AI agents and reviewed by the author. The scanner architecture and the review are the author's.
 
-</details>
+## License and author
 
-<details>
-<summary><strong>Can I use this in production?</strong></summary>
+MIT — Copyright (c) 2026 Kelvin Rebelo de Oliveira.
 
-This is a **study/portfolio project**. Review and harden (auth, persistence, monitoring, etc.) before production use.
-
-</details>
-
-
-
----
-
-## Documentation
-
-- **Source Code** ,  Browse the `src/` directory for implementation details
-- **API Reference** ,  Inline docstrings + type hints
-- **Architecture Diagram** ,  See [architecture.mermaid](docs/architecture.mermaid) (if present)
-- **Changelog** ,  [CHANGELOG.md](CHANGELOG.md) (if present)
-- **Contributing** ,  [CONTRIBUTING.md](CONTRIBUTING.md) (if present)
-
-## License
-
-[MIT](LICENSE) ,  Kelvin Oliveira
-
----
-
-<div align="center">
-
-**Built with** · Python 3 + scikit-learn + pandas
-
-**Author** · [Kelvin Oliveira](https://github.com/KelvinOliveiraCode) · [Portfolio](https://kelvinoliveiracode.github.io/portfolio/)
-
-</div>
+**Author**: [Kelvin Oliveira](https://github.com/KelvinOliveiraCode) · [Portfolio](https://kelvinoliveiracode.github.io/portfolio/)
