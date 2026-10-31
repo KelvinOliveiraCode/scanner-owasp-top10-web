@@ -1,118 +1,113 @@
 # scanner-owasp-top10-web
 
-<div align="center">
-
 [English](README.en.md) · **Português (Brasil)**
 
-</div>
-
-[![Python 3](https://img.shields.io/badge/Python-3.x-3776AB?style=flat-square&logo=python&logoColor=white)](https://www.python.org/) [![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat-square&logo=scikit-learn)](https://scikit-learn.org/) [![pandas](https://img.shields.io/badge/pandas-150458?style=flat-square&logo=pandas)](https://pandas.pydata.org/) [![pytest](https://img.shields.io/badge/pytest-0A9EDC?style=flat-square&logo=pytest)](https://docs.pytest.org/) [![MIT License](https://img.shields.io/badge/License-MIT-f4c430?style=flat-square)](LICENSE)
-
-### Projeto funcional ,  scanner-owasp-top10-web
-
----
+[![Python 3](https://img.shields.io/badge/Python-3.10%2B-3776AB?style=flat-square&logo=python&logoColor=white)](#) [![requests](https://img.shields.io/badge/requests-2.31%2B-2C8EBB?style=flat-square&logo=python)](#) [![BeautifulSoup](https://img.shields.io/badge/BeautifulSoup-4-2C8EBB?style=flat-square)](#) [![pytest](https://img.shields.io/badge/pytest-70%20testes-0A9EDC?style=flat-square&logo=pytest)](#) [![MIT License](https://img.shields.io/badge/License-MIT-f4c430?style=flat-square)](LICENSE)
 
 ## O que é
 
-Projeto funcional ,  scanner-owasp-top10-web
+**Scanner de segurança web** que verifica alvos HTTP contra um conjunto de checagens inspiradas no **OWASP Top 10**: cabeçalhos de segurança, cookies, SQL injection e XSS. Executa por linha de comando e gera relatório (JSON por padrão). É uma ferramenta de auditoria educacional.
 
----
+## ⚠️ Aviso de uso ético e legal
 
-## Início Rápido
+Esta é uma ferramenta de **auditoria**. Use apenas em sistemas **que você possui** ou com **autorização explícita por escrito**. Escanear sistemas de terceiros sem permissão é ilegal e antiético.
 
-```bash
-# Clone e entre
-git clone https://github.com/KelvinOliveiraCode/<repo>.git
-cd <repo>
+## Status
 
-# Instale dependências
-# Nenhum requirements.txt detectado
+Laboratório funcional de segurança, com 70 testes.
 
-# Execute o projeto
-python main.py
+> **Aviso (verificado pelo agente):** o repositório contém **estrutura duplicada commitada** (`src/src/…` e `tests/tests/…`). Os **70 testes passam** com `PYTHONPATH=src pytest tests/`. Ver `HYGIENE.md`.
 
-# Execute os testes
-pytest
+## Funcionalidades
+
+- **Verificação de cabeçalhos de segurança** (`headers.py`): detecta ausência dos headers básicos.
+- **Verificação de cookies** (`cookies.py`): avalia atributos de segurança (HttpOnly, Secure, etc.).
+- **Teste de SQL injection** (`sqli.py`) e **XSS** (`xss.py`) em parâmetros.
+- **Motor de varredura** (`core.py`, classe `Scanner`): orquestra as checagens sobre uma URL alvo.
+- **Relatório** (`report.py`): saída em JSON por padrão.
+- **CLI**: alvo (URL), formato do relatório, arquivo de saída e timeout.
+
+## Arquitetura
+
+Pacote `scanner_owasp` com 'core' (motor), módulos de checagem (`headers`, `cookies`, `sqli`, `xss`), `models` (achados), `report` (saída) e `cli`. O `Scanner.scan(target)` roda todas as checagens e agrega os achados.
+
+```mermaid
+flowchart LR
+    CLI[cli.py] --> SC[Scanner - core.py]
+    SC --> H[headers - checagem]
+    SC --> CK[cookies - checagem]
+    SC --> SQ[sqli - teste]
+    SC --> XS[xss - teste]
+    H --> M[models - achados]
+    SC --> R[report - JSON]
 ```
 
-## Como funciona
+## Stack
 
-Estrutura limpa e modular com separação de responsabilidades.
+- Python ≥ 3.10
+- requests ≥ 2.31, beautifulsoup4 ≥ 4.12
+- pytest (dev)
 
----
+## Estrutura do repositório
 
-## Capacidades
+```
+scanner-owasp-top10-web/
+├── pyproject.toml · BRIEF.md
+├── src/scanner_owasp/
+│   ├── core.py       # motor do scanner
+│   ├── headers.py · cookies.py · sqli.py · xss.py
+│   ├── models.py · report.py · cli.py
+│   └── __main__.py
+├── tests/            # 7 arquivos, 70 testes
+├── LICENSE           # MIT
+└── (duplicados commitados: src/src/…, tests/tests/…)  # ver HYGIENE
+```
 
-| Capacidade | Descrição |
-|------------|-------------|
-| Carregamento de Dados | Auto-download do TensorFlow creditcard.csv (284k transações) com cache local |
-| EDA e Visualização | Distribuição de classes, histogramas de Amount, heatmaps de correlação (matplotlib/seaborn) |
-| Pré-processamento | RobustScaler em Amount/Time, split estratificado, remoção de duplicatas |
-| Balanceamento | SMOTE oversampling (fallback: class_weight="balanced") |
-| Modelagem | LogisticRegression, RandomForest, ExtraTrees com RandomizedSearchCV (StratifiedKFold) |
-| Métricas | Accuracy, Precision, Recall, F1, ROC AUC, Specificity, Confusion Matrix |
-| Seleção | Score ponderado: Recall 40% + F1 30% + Precision 20% + Accuracy 10% |
-| Persistência | Serialização joblib para modelo, scaler e resultados completos |
+## Pré-requisitos e instalação
 
+Python ≥ 3.10.
 
----
+```bash
+pip install -e .
+```
 
+## Como executar
 
+```bash
+python -m scanner_owasp https://example.com/page?id=1
+# ou, via script
+scanner-owasp <target> [--formato json|...] [--saida arquivo] [--timeout 10.0]
+```
 
----
+## Testes e qualidade
 
-## Perguntas Frequentes
+Execução real (verificada pelo agente):
 
-<details>
-<summary><strong>O que é este projeto?</strong></summary>
+```bash
+PYTHONPATH=src python -m pytest tests/
+# 70 passed
+```
 
-Um estudo/projeto em Python demonstrando conceitos fundamentais.
+> `pytest tests/` sem `PYTHONPATH` falha na coleta por causa da estrutura duplicada commitada (ver Status).
 
-</details>
+## Decisões técnicas e trade-offs
 
-<details>
-<summary><strong>Como executar?</strong></summary>
+- **Checagens determinísticas por HTTP** (via `requests`) em vez de navegador: rápido e leve; em troca, não executa JavaScript.
+- **Relatório JSON**: fácil de integrar a pipelines.
+- **Escopo focado no OWASP Top 10** web (headers, cookies, SQLi, XSS): cobertura comum de auditoria inicial.
 
-Veja [Início Rápido](#início-rápido) para comandos copiáveis.
+## Limitações conhecidas e roadmap
 
-</details>
+- Não executa JavaScript nem testa SPA complexas.
+- O SQLi/XSS usa payloads simples; pode gerar falsos negativos em aplicações com WAF.
+- As checagens cobrem um subconjunto do OWASP Top 10; não substitui um scanner completo nem análise manual.
 
-<details>
-<summary><strong>Há testes?</strong></summary>
+## Processo de desenvolvimento
 
-Nenhum teste automatizado neste repositório.
+Projeto individual de Kelvin Oliveira, construído com agentes de IA orquestrados e revisado pelo autor. A arquitetura do scanner e a revisão são do autor.
 
-</details>
+## Licença e autor
 
-<details>
-<summary><strong>Posso usar em produção?</strong></summary>
+MIT — Copyright (c) 2026 Kelvin Rebelo de Oliveira.
 
-Este é um **projeto de estudo/portfólio**. Revise e endureça (auth, persistência, monitoramento, etc.) antes de usar em produção.
-
-</details>
-
-
-
----
-
-## Documentação
-
-- **Código-Fonte** ,  Navegue pelo diretório `src/` para detalhes de implementação
-- **Referência da API** ,  Docstrings inline + type hints
-- **Diagrama de Arquitetura** ,  Veja [architecture.mermaid](docs/architecture.mermaid) (se presente)
-- **Changelog** ,  [CHANGELOG.md](CHANGELOG.md) (se presente)
-- **Contribuindo** ,  [CONTRIBUTING.md](CONTRIBUTING.md) (se presente)
-
-## Licença
-
-[MIT](LICENSE) ,  Kelvin Oliveira
-
----
-
-<div align="center">
-
-**Construído com** · Python 3 + scikit-learn + pandas
-
-**Autor** · [Kelvin Oliveira](https://github.com/KelvinOliveiraCode) · [Portfolio](https://kelvinoliveiracode.github.io/portfolio/)
-
-</div>
+**Autor**: [Kelvin Oliveira](https://github.com/KelvinOliveiraCode) · [Portfólio](https://kelvinoliveiracode.github.io/portfolio/)
